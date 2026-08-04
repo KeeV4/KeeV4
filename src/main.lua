@@ -4,7 +4,6 @@ if type(import) ~= "function" then
 	error("KeeV4 main.luau must be loaded through init.lua")
 end
 
--- Keep this as gui.lua if that is your current filename.
 local GUI = import("src/gui.lua")
 
 local App = {
@@ -21,14 +20,10 @@ local App = {
 		Title = "KeeV4",
 		GuiName = "KeeV4",
 		Keybind = "RightShift",
-
-		Size = UDim2.fromOffset(620, 390),
 		Accent = Color3.fromRGB(5, 133, 104),
 	},
 }
 
--- Keys available from the settings dropdown.
--- More can be added later.
 local AVAILABLE_KEYBINDS = {
 	"RightShift",
 	"LeftShift",
@@ -105,7 +100,6 @@ function App:CreateModule(categoryName, settings)
 	local module = category:CreateModule(settings)
 
 	local moduleName = settings.Name or "Module"
-
 	self.Modules[moduleName] = module
 
 	return module
@@ -118,7 +112,6 @@ function App:SetKeybind(keybind)
 	)
 
 	local resolvedKeybind = self.Window:SetKeybind(keybind)
-
 	self.Settings.Keybind = resolvedKeybind.Name
 
 	return resolvedKeybind
@@ -145,22 +138,42 @@ function App:Toggle()
 end
 
 function App:CreateBaseplate()
-	-- This creates the button called "Menu" underneath KeeV4.
+	-- KeeV4
+	-- └── Menu
+	--     ├── PvP
+	--     └── Bed Breaking
+
 	local menuCategory = self:GetCategory("Menu")
 
-	-- This creates "PvP" inside the Menu window.
 	local pvpModule = self:CreateModule("Menu", {
 		Name = "PvP",
 
 		Function = function(enabled)
-			print("PvP enabled:", enabled)
+			print("PvP module:", enabled)
 		end,
 	})
 
-	-- Make the Menu panel show its modules immediately when opened.
+	local bedBreakingModule = self:CreateModule("Menu", {
+		Name = "Bed Breaking",
+
+		Function = function(enabled)
+			print("Bed Breaking module:", enabled)
+		end,
+	})
+
+	-- Leave their option areas empty for now.
+	-- Later:
+	-- pvpModule:CreateButton(...)
+	-- pvpModule:CreateToggle(...)
+	-- pvpModule:CreateSlider(...)
+	--
+	-- bedBreakingModule:CreateButton(...)
+	-- bedBreakingModule:CreateToggle(...)
+	-- bedBreakingModule:CreateSlider(...)
+
 	menuCategory:SetExpanded(true)
 
-	-- Settings remains a separate category opened by the gear icon.
+	-- Separate interface settings category.
 	local settingsCategory = self:GetCategory("Settings")
 
 	local interfaceModule = settingsCategory:CreateModule({
@@ -169,7 +182,6 @@ function App:CreateBaseplate()
 
 	interfaceModule:CreateDropdown({
 		Name = "Toggle key",
-
 		List = AVAILABLE_KEYBINDS,
 		Default = self.Settings.Keybind,
 
@@ -194,7 +206,6 @@ function App:Start(overrides)
 	end
 
 	local settings = copyTable(self.Settings)
-
 	applyOverrides(settings, overrides)
 
 	self.Settings = settings
@@ -202,22 +213,13 @@ function App:Start(overrides)
 	self.Window = GUI:CreateWindow({
 		Title = settings.Title,
 		GuiName = settings.GuiName,
-
-		-- RightShift by default.
 		Keybind = settings.Keybind,
-
-		Size = settings.Size,
 		Accent = settings.Accent,
 	})
 
 	self.Started = true
 
 	self:CreateBaseplate()
-
-	-- Add the functionality loader here later:
-	--
-	-- local Functionality = import("src/functionality.luau")
-	-- Functionality:Mount(self)
 
 	return self
 end
