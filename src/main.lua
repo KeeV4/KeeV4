@@ -145,9 +145,22 @@ function App:Toggle()
 end
 
 function App:CreateBaseplate()
-	-- Empty category where your future modules can be mounted.
-	self:GetCategory("PvP")
+	-- This creates the button called "Menu" underneath KeeV4.
+	local menuCategory = self:GetCategory("Menu")
 
+	-- This creates "PvP" inside the Menu window.
+	local pvpModule = self:CreateModule("Menu", {
+		Name = "PvP",
+
+		Function = function(enabled)
+			print("PvP enabled:", enabled)
+		end,
+	})
+
+	-- Make the Menu panel show its modules immediately when opened.
+	menuCategory:SetExpanded(true)
+
+	-- Settings remains a separate category opened by the gear icon.
 	local settingsCategory = self:GetCategory("Settings")
 
 	local interfaceModule = settingsCategory:CreateModule({
@@ -170,7 +183,6 @@ function App:CreateBaseplate()
 		end,
 	})
 
-	-- Keep the interface options expanded initially.
 	interfaceModule:SetOptionsVisible(true)
 
 	self.Modules.Interface = interfaceModule
