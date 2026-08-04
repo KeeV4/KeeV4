@@ -3,7 +3,7 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local TextService = game:GetService("TextService")
 
-local KeeV4 = {}
+local GUI = {}
 
 local Theme = {
 	Main = Color3.fromRGB(26, 25, 26),
@@ -24,11 +24,6 @@ local Assets = {
 	ExpandUp = "rbxassetid://14368317595",
 	Settings = "rbxassetid://14368318994",
 	Utility = "rbxassetid://14368359107",
-}
-
-local CategoryIcons = {
-	Main = Assets.Utility,
-	Settings = Assets.Settings,
 }
 
 local activeTweens = {}
@@ -213,7 +208,7 @@ local function insertOption(moduleApi, name, optionApi)
 	table.insert(moduleApi.OptionOrder, optionApi)
 end
 
-function KeeV4:CreateWindow(options)
+function GUI:CreateWindow(options)
 	options = options or {}
 
 	if options.Accent then
@@ -318,25 +313,6 @@ function KeeV4:CreateWindow(options)
 	})
 	addCorner(logoAccent, UDim.new(1, 0))
 
-	local settingsButton = create("TextButton", {
-		Name = "Settings",
-		Size = UDim2.fromOffset(40, 40),
-		Position = UDim2.new(1, -40, 0, 0),
-		BackgroundTransparency = 1,
-		AutoButtonColor = false,
-		Text = "",
-		Parent = mainWindow,
-	})
-
-	local settingsIcon = create("ImageLabel", {
-		Name = "Icon",
-		Size = UDim2.fromOffset(14, 14),
-		Position = UDim2.fromOffset(15, 12),
-		BackgroundTransparency = 1,
-		Image = Assets.Settings,
-		ImageColor3 = light(Theme.Main, 0.37),
-		Parent = settingsButton,
-	})
 
 	local mainChildren = create("Frame", {
 		Name = "Children",
@@ -439,7 +415,7 @@ function KeeV4:CreateWindow(options)
 
 		local categoryIndex = #self.CategoryOrder + 1
 		local panelX = 236 + ((categoryIndex - 1) * 230)
-		local iconAsset = settings.Icon or CategoryIcons[name] or Assets.Utility
+		local iconAsset = settings.Icon or Assets.Utility
 		local iconSize = settings.Size or UDim2.fromOffset(16, 16)
 
 		local category = {
@@ -901,6 +877,81 @@ function KeeV4:CreateWindow(options)
 					math.max(getTextWidth(bindText.Text, 12, Theme.Font) + 10, 20),
 					21
 				)
+			end
+
+
+			function module:CreateButton(buttonSettings)
+				buttonSettings = buttonSettings or {}
+
+				local optionName = buttonSettings.Name or "Button"
+				local option = {
+					Type = "Button",
+				}
+
+				local row = create("TextButton", {
+					Name = optionName .. "Button",
+					Size = UDim2.new(1, 0, 0, 31),
+					BackgroundColor3 = dark(
+						moduleChildren.BackgroundColor3,
+						buttonSettings.Darker and 0.02 or 0
+					),
+					BorderSizePixel = 0,
+					AutoButtonColor = false,
+					Visible = buttonSettings.Visible == nil
+						or buttonSettings.Visible,
+					Text = "",
+					Parent = moduleChildren,
+				})
+
+				local border = create("Frame", {
+					Name = "Background",
+					Size = UDim2.new(1, -20, 0, 27),
+					Position = UDim2.fromOffset(10, 2),
+					BackgroundColor3 = light(Theme.Main, 0.05),
+					BorderSizePixel = 0,
+					Parent = row,
+				})
+				addCorner(border)
+
+				local label = create("TextLabel", {
+					Name = "Label",
+					Size = UDim2.new(1, -4, 1, -4),
+					Position = UDim2.fromOffset(2, 2),
+					BackgroundColor3 = Theme.Main,
+					BorderSizePixel = 0,
+					Text = optionName,
+					TextColor3 = dark(Theme.Text, 0.16),
+					TextSize = 14,
+					Font = Theme.Font,
+					Parent = border,
+				})
+				addCorner(label, UDim.new(0, 4))
+
+				function option:Press()
+					if buttonSettings.Function then
+						task.spawn(buttonSettings.Function)
+					end
+				end
+
+				registerConnection(row.MouseEnter:Connect(function()
+					tween(border, {
+						BackgroundColor3 = light(Theme.Main, 0.0875),
+					})
+				end))
+
+				registerConnection(row.MouseLeave:Connect(function()
+					tween(border, {
+						BackgroundColor3 = light(Theme.Main, 0.05),
+					})
+				end))
+
+				registerConnection(row.MouseButton1Click:Connect(function()
+					option:Press()
+				end))
+
+				insertOption(module, optionName, option)
+				updateOptionsHeight()
+				return option
 			end
 
 			function module:CreateToggle(toggleSettings)
@@ -1597,20 +1648,6 @@ function KeeV4:CreateWindow(options)
 		return category
 	end
 
-	registerConnection(settingsButton.MouseEnter:Connect(function()
-		settingsIcon.ImageColor3 = Theme.Text
-	end))
-
-	registerConnection(settingsButton.MouseLeave:Connect(function()
-		settingsIcon.ImageColor3 = light(Theme.Main, 0.37)
-	end))
-
-	registerConnection(settingsButton.MouseButton1Click:Connect(function()
-		local settingsCategory = windowApi.Categories.Settings
-		if settingsCategory then
-			settingsCategory:ToggleVisible()
-		end
-	end))
 
 	registerConnection(UserInputService.InputBegan:Connect(function(input, processed)
 		if windowApi.Destroyed then
@@ -1681,4 +1718,4 @@ function KeeV4:CreateWindow(options)
 	return windowApi
 end
 
-return KeeV4
+return GUI
