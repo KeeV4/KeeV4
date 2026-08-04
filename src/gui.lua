@@ -1642,7 +1642,13 @@ function KeeV4:CreateWindow(options)
 			return
 		end
 
-		if not processed and input.KeyCode == windowApi.Keybind then
+		-- Check the GUI bind before rejecting CoreGui-processed input.
+		-- Keys such as F1-F10 may be marked as processed by Roblox even
+		-- though the user deliberately selected them as the GUI toggle.
+		if input.UserInputType == Enum.UserInputType.Keyboard
+			and input.KeyCode == windowApi.Keybind
+			and UserInputService:GetFocusedTextBox() == nil
+		then
 			windowApi:Toggle()
 			return
 		end
