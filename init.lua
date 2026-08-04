@@ -46,7 +46,6 @@ local function import(path)
 		)
 	end
 
-	-- Passes the import function into every module through ...
 	local executionSuccess, result = pcall(
 		chunk,
 		import
@@ -75,14 +74,11 @@ end
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
-if not player then
-	repeat
-		task.wait()
-		player = Players.LocalPlayer
-	until player
-end
+repeat
+	task.wait()
+	player = Players.LocalPlayer
+until player
 
--- Information the whitelist system can inspect.
 local whitelistContext = {
 	Player = player,
 	UserId = player.UserId,
@@ -94,14 +90,11 @@ local whitelistContext = {
 	JobId = game.JobId,
 }
 
--- Whitelist check occurs before main.lua is loaded.
 local Whitelist = import("src/whitelist.lua")
 
-local checkSuccess, allowed, denialReason = pcall(
-	function()
-		return Whitelist:Check(whitelistContext)
-	end
-)
+local checkSuccess, allowed, denialReason = pcall(function()
+	return Whitelist:Check(whitelistContext)
+end)
 
 if not checkSuccess then
 	error(
@@ -117,7 +110,6 @@ if not allowed then
 	)
 end
 
--- Only authorised users reach the main application.
 local App = import("src/main.lua")
 
 App.Whitelist = Whitelist
