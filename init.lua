@@ -1,5 +1,5 @@
 local BASE_URL =
-	"https://raw.githubusercontent.com/KeeV4/KeeV4/main/"
+	"https://github.com/KeeV4/KeeV4/tree/main"
 
 local cache = {}
 local currentlyLoading = {}
