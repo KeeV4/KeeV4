@@ -146,7 +146,7 @@ end
 
 function App:CreateBaseplate()
 	-- Empty category where your future modules can be mounted.
-	self:GetCategory("Main")
+	self:GetCategory("PvP")
 
 	local settingsCategory = self:GetCategory("Settings")
 
