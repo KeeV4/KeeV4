@@ -143,23 +143,16 @@ function App:CreateBaseplate()
 	--     ├── PvP
 	--     └── Bed Breaking
 
-	local menuCategory = self:GetCategory("Menu")
+	local menuCategory = self:GetCategory("PvP")
 
-	local pvpModule = self:CreateModule("Menu", {
-		Name = "PvP",
+	local pvpModule = self:CreateModule("PvP", {
+		Name = "HitFix",
 
 		Function = function(enabled)
 			print("PvP module:", enabled)
 		end,
 	})
 
-	local bedBreakingModule = self:CreateModule("Menu", {
-		Name = "Bed Breaking",
-
-		Function = function(enabled)
-			print("Bed Breaking module:", enabled)
-		end,
-	})
 
 	-- Leave their option areas empty for now.
 	-- Later:
